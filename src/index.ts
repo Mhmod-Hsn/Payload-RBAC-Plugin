@@ -1,113 +1,52 @@
-import type { CollectionSlug, Config } from 'payload'
+import type { Config } from 'payload'
+import type { PluginOptions } from './types.js'
 
-import { customEndpointHandler } from './endpoints/customEndpointHandler.js'
-
-export type RbacConfig = {
-  /**
-   * List of collections to add a custom field
-   */
-  collections?: Partial<Record<CollectionSlug, true>>
-  disabled?: boolean
-}
+import { createPermissionsCollection } from './collections/Permissions.js'
+import { createRolesCollection } from './collections/Roles.js'
 
 export const rbac =
-  (pluginOptions: RbacConfig) =>
+  (pluginOptions?: PluginOptions) =>
   (config: Config): Config => {
+    const options = pluginOptions || {}
+    
+    if (options.enabled === false) {
+      return config
+    }
+
     if (!config.collections) {
       config.collections = []
     }
 
-    config.collections.push({
-      slug: 'plugin-collection',
-      fields: [
-        {
-          name: 'id',
-          type: 'text',
-        },
-      ],
-    })
+    // Add Roles and Permissions collections
+    config.collections.push(createPermissionsCollection(options))
+    config.collections.push(createRolesCollection(options))
 
-    if (pluginOptions.collections) {
-      for (const collectionSlug in pluginOptions.collections) {
-        const collection = config.collections.find(
-          (collection) => collection.slug === collectionSlug,
-        )
+    // Extend the target auth collection
+    const authSlug = options.authCollectionSlug || 'users'
+    const rolesSlug = options.rolesCollectionSlug || 'roles'
 
-        if (collection) {
-          collection.fields.push({
-            name: 'addedByPlugin',
-            type: 'text',
-            admin: {
-              position: 'sidebar',
-            },
-          })
-        }
-      }
-    }
-
-    /**
-     * If the plugin is disabled, we still want to keep added collections/fields so the database schema is consistent which is important for migrations.
-     * If your plugin heavily modifies the database schema, you may want to remove this property.
-     */
-    if (pluginOptions.disabled) {
-      return config
-    }
-
-    if (!config.endpoints) {
-      config.endpoints = []
-    }
-
-    if (!config.admin) {
-      config.admin = {}
-    }
-
-    if (!config.admin.components) {
-      config.admin.components = {}
-    }
-
-    if (!config.admin.components.beforeDashboard) {
-      config.admin.components.beforeDashboard = []
-    }
-
-    config.admin.components.beforeDashboard.push(
-      `rbac/client#BeforeDashboardClient`,
-    )
-    config.admin.components.beforeDashboard.push(
-      `rbac/rsc#BeforeDashboardServer`,
+    const authCollection = config.collections.find(
+      (collection) => collection.slug === authSlug,
     )
 
-    config.endpoints.push({
-      handler: customEndpointHandler,
-      method: 'get',
-      path: '/my-plugin-endpoint',
-    })
-
-    const incomingOnInit = config.onInit
-
-    config.onInit = async (payload) => {
-      // Ensure we are executing any existing onInit functions before running our own.
-      if (incomingOnInit) {
-        await incomingOnInit(payload)
-      }
-
-      const { totalDocs } = await payload.count({
-        collection: 'plugin-collection',
-        where: {
-          id: {
-            equals: 'seeded-by-plugin',
-          },
+    if (authCollection) {
+      authCollection.fields.push({
+        name: 'roles',
+        type: 'relationship',
+        relationTo: rolesSlug,
+        hasMany: true,
+        saveToJWT: true,
+        admin: {
+          description: 'Roles assigned to this user.',
         },
       })
-
-      if (totalDocs === 0) {
-        await payload.create({
-          collection: 'plugin-collection',
-          data: {
-            id: 'seeded-by-plugin',
-          },
-        })
-      }
+    } else {
+      console.warn(`[rbac-plugin] Auth collection '${authSlug}' not found. Cannot inject roles field.`)
     }
 
     return config
   }
+
+// Export utilities and types for consumers
+export * from './types.js'
+export * from './utilities/index.js'

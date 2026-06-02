@@ -47,6 +47,11 @@ const buildConfigWithMemoryDB = async () => {
           staticDir: path.resolve(dirname, 'media'),
         },
       },
+      {
+        slug: 'users',
+        auth: true,
+        fields: [],
+      },
     ],
     db: mongooseAdapter({
       ensureIndexes: true,
@@ -59,9 +64,7 @@ const buildConfigWithMemoryDB = async () => {
     },
     plugins: [
       rbac({
-        collections: {
-          posts: true,
-        },
+        enabled: true,
       }),
     ],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
