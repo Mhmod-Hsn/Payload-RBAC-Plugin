@@ -46,11 +46,11 @@ Assign permissions directly to roles in the admin UI.
 Add the plugin to your project:
 
 ```bash
-pnpm add payload-rbac
+pnpm add payload-rbac-plugin
 # or
-npm install payload-rbac
+npm install payload-rbac-plugin
 # or
-yarn add payload-rbac
+yarn add payload-rbac-plugin
 ```
 
 ---
@@ -61,7 +61,7 @@ Import and configure the plugin in your `payload.config.ts`:
 
 ```typescript
 import { buildConfig } from 'payload'
-import { rbac, hasPermission } from 'payload-rbac'
+import { rbac, hasPermission } from 'payload-rbac-plugin'
 
 export default buildConfig({
   collections: [
@@ -108,7 +108,7 @@ export default buildConfig({
 You can protect collections using the `checkPermission` Higher-Order Function. It returns a standard Payload `Access` control resolver.
 
 ```typescript
-import { checkPermission } from 'payload-rbac'
+import { checkPermission } from 'payload-rbac-plugin'
 
 export const PostsCollection = {
   slug: 'posts',
@@ -127,7 +127,7 @@ export const PostsCollection = {
 For custom endpoints, hooks, or conditionally rendering logic, use the `hasPermission` utility:
 
 ```typescript
-import { hasPermission } from 'payload-rbac'
+import { hasPermission } from 'payload-rbac-plugin'
 
 const myCustomEndpoint = (req, res) => {
   const user = req.user
