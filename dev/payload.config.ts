@@ -83,8 +83,8 @@ const buildConfigWithMemoryDB = async () => {
     plugins: [
       rbac({
         enabled: true,
-        hidePermissions: checkPermission('permissions'),
-        hideRoles: checkPermission('roles'),
+        hidePermissions: ({ user }) => !hasPermission(user, 'access:permissions'),
+        hideRoles: ({ user }) => !hasPermission(user, 'access:roles'),
       }),
     ],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',
