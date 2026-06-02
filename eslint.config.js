@@ -22,11 +22,15 @@ export const defaultESLintIgnores = [
   '**/temp/',
 ]
 
+const tsPlugin = payloadEsLintConfig.find(c => c.plugins && c.plugins['@typescript-eslint'])?.plugins?.['@typescript-eslint']
+
 export default [
   ...payloadEsLintConfig,
   {
+    plugins: tsPlugin ? { '@typescript-eslint': tsPlugin } : {},
     rules: {
       'no-restricted-exports': 'off',
+      '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
   {

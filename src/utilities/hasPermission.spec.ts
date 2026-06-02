@@ -1,6 +1,6 @@
-import { describe, it, expect } from 'vitest'
-import { hasPermission } from './hasPermission.js'
-import type { PayloadRequest } from 'payload'
+import type { PayloadRequest } from 'payload';
+import { describe, expect, it } from 'vitest';
+import { hasPermission } from './hasPermission';
 
 describe('hasPermission', () => {
   it('should return false if user is null', () => {
@@ -83,6 +83,7 @@ describe('hasPermission', () => {
         },
       ],
     } as unknown as PayloadRequest['user']
+    expect(hasPermission(user, 'delete:posts')).toBe(true)
     expect(hasPermission(user, 'delete:posts')).toBe(true)
     expect(hasPermission(user, 'read:posts')).toBe(true)
     expect(hasPermission(user, 'create:users')).toBe(false)

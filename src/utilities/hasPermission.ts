@@ -28,16 +28,11 @@ export const hasPermission = (
     }
 
     for (const permission of permissions) {
-      // If permission is an object (populated) and has a name
       if (typeof permission === 'object' && permission !== null) {
         if ('name' in permission && permission.name === requiredPermission) {
           return true
         }
       } 
-      // Note: If permission is just an ID (unpopulated), we cannot synchronously
-      // determine its name here. In a strictly synchronous check, we must return false 
-      // or ignore it. For a fully robust check with unpopulated data, an async version 
-      // requiring the payload instance would be necessary.
     }
   }
 

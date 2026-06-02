@@ -1,14 +1,14 @@
-import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
-import { MongoMemoryReplSet } from 'mongodb-memory-server'
-import path from 'path'
-import { buildConfig } from 'payload'
-import { rbac } from 'rbac'
-import sharp from 'sharp'
-import { fileURLToPath } from 'url'
+import { mongooseAdapter } from '@payloadcms/db-mongodb';
+import { lexicalEditor } from '@payloadcms/richtext-lexical';
+import { MongoMemoryReplSet } from 'mongodb-memory-server';
+import path from 'path';
+import { buildConfig } from 'payload';
+import { checkPermission, hasPermission, rbac } from 'rbac';
+import sharp from 'sharp';
+import { fileURLToPath } from 'url';
 
-import { testEmailAdapter } from './helpers/testEmailAdapter.js'
-import { seed } from './seed.js'
+import { testEmailAdapter } from './helpers/testEmailAdapter';
+import { seed } from './seed';
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -37,18 +37,36 @@ const buildConfigWithMemoryDB = async () => {
     },
     collections: [
       {
+        access: {
+          read: checkPermission('posts:read'),
+          create: checkPermission('posts:create'),
+          update: checkPermission('posts:update'),
+          delete: checkPermission('posts:delete'),
+        },
         slug: 'posts',
         fields: [],
       },
       {
-        slug: 'media',
+        slug: "media",
+        access: {
+          read: checkPermission('media:read'),
+          create: checkPermission('media:create'),
+          update: checkPermission('media:update'),
+          delete: checkPermission('media:delete'),
+        },
         fields: [],
         upload: {
           staticDir: path.resolve(dirname, 'media'),
         },
       },
       {
-        slug: 'users',
+        slug:"users",
+        access: {
+          read: checkPermission('users:read'),
+          create: checkPermission('users:create'),
+          update: checkPermission('users:update'),
+          delete: checkPermission('users:delete'),
+        },
         auth: true,
         fields: [],
       },
@@ -65,6 +83,8 @@ const buildConfigWithMemoryDB = async () => {
     plugins: [
       rbac({
         enabled: true,
+        hidePermissions: checkPermission('permissions'),
+        hideRoles: checkPermission('roles'),
       }),
     ],
     secret: process.env.PAYLOAD_SECRET || 'test-secret_key',

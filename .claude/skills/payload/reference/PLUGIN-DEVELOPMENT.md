@@ -542,10 +542,10 @@ export const BeforeDashboardServer = () => {
 }
 
 // src/exports/client.ts
-export { BeforeDashboardClient } from '../components/BeforeDashboardClient.js'
+export { BeforeDashboardClient } from '../components/BeforeDashboardClient'
 
 // src/exports/rsc.ts
-export { BeforeDashboardServer } from '../components/BeforeDashboardServer.js'
+export { BeforeDashboardServer } from '../components/BeforeDashboardServer'
 ```
 
 ### Translations (i18n)
@@ -565,7 +565,7 @@ export const translations = {
 
 // src/plugin.ts
 import { deepMergeSimple } from 'payload/shared'
-import { translations } from './translations/index.js'
+import { translations } from './translations/index'
 
 export const myPlugin =
   (options: PluginConfig): Plugin =>
@@ -648,7 +648,7 @@ export interface MyPluginConfig {
 
 ```ts
 // src/exports/types.ts
-export type { MyPluginConfig, FieldsOverride } from '../types.js'
+export type { MyPluginConfig, FieldsOverride } from '../types'
 
 // Usage
 import type { MyPluginConfig } from '@payloadcms/plugin-example/types'
@@ -1311,7 +1311,7 @@ PAYLOAD_SECRET=your-secret-here
 ```ts
 import { buildConfig } from 'payload'
 import { mongooseAdapter } from '@payloadcms/db-mongodb'
-import { myPlugin } from '../src/index.js'
+import { myPlugin } from '../src/index'
 
 export default buildConfig({
   secret: process.env.PAYLOAD_SECRET!,
@@ -1345,7 +1345,7 @@ import type { Payload } from 'payload'
 import config from '@payload-config'
 import { createPayloadRequest, getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, test } from 'vitest'
-import { customEndpointHandler } from '../src/endpoints/handler.js'
+import { customEndpointHandler } from '../src/endpoints/handler'
 
 let payload: Payload
 

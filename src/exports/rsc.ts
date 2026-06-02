@@ -1,1 +1,2 @@
-export { BeforeDashboardServer } from '../components/BeforeDashboardServer.js'
+export { BeforeDashboardServer } from '../components/BeforeDashboardServer';
+

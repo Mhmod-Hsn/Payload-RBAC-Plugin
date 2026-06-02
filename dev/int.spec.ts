@@ -1,8 +1,8 @@
-import type { Payload } from 'payload'
+import type { Payload } from 'payload';
 
-import config from '@payload-config'
-import { getPayload } from 'payload'
-import { afterAll, beforeAll, describe, expect, test } from 'vitest'
+import config from '@payload-config';
+import { getPayload } from 'payload';
+import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 
 let payload: Payload
 
@@ -16,14 +16,14 @@ beforeAll(async () => {
 
 describe('Plugin integration tests', () => {
   test('plugin creates roles and permissions collections', async () => {
-    expect(payload.collections['roles']).toBeDefined()
-    expect(payload.collections['permissions']).toBeDefined()
+    expect((payload.collections as any)['roles']).toBeDefined()
+    expect((payload.collections as any)['permissions']).toBeDefined()
   })
 
   test('plugin injects roles field into users collection', async () => {
-    const usersCollection = payload.collections['users'].config
+    const usersCollection = (payload.collections as any)['users'].config
     const rolesField = usersCollection.fields.find(
-      (f) => 'name' in f && f.name === 'roles'
+      (f: any) => 'name' in f && f.name === 'roles'
     )
     
     expect(rolesField).toBeDefined()

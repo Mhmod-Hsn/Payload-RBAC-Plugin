@@ -1,5 +1,5 @@
-import type { CollectionConfig } from 'payload'
-import type { PluginOptions } from '../types.js'
+import type { CollectionConfig } from 'payload';
+import type { PluginOptions } from '../types';
 
 export const createRolesCollection = (options: PluginOptions): CollectionConfig => {
   const slug = options.rolesCollectionSlug || 'roles'
@@ -11,6 +11,7 @@ export const createRolesCollection = (options: PluginOptions): CollectionConfig 
     admin: {
       useAsTitle: 'name',
       group: 'Access Control',
+      hidden: options.hideRoles ?? false,
     },
     access: {
       read: () => true,

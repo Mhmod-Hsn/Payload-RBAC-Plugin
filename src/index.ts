@@ -1,8 +1,8 @@
-import type { Config } from 'payload'
-import type { PluginOptions } from './types.js'
+import type { Config } from 'payload';
+import type { PluginOptions } from './types';
 
-import { createPermissionsCollection } from './collections/Permissions.js'
-import { createRolesCollection } from './collections/Roles.js'
+import { createPermissionsCollection } from './collections/Permissions';
+import { createRolesCollection } from './collections/Roles';
 
 export const rbac =
   (pluginOptions?: PluginOptions) =>
@@ -48,5 +48,6 @@ export const rbac =
   }
 
 // Export utilities and types for consumers
-export * from './types.js'
-export * from './utilities/index.js'
+export * from './types';
+export * from './utilities/index';
+

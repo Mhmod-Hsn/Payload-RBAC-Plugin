@@ -1,2 +1,3 @@
-export { hasPermission } from './hasPermission.js'
-export { checkPermission } from './checkPermission.js'
+export { checkPermission } from './checkPermission';
+export { hasPermission } from './hasPermission';
+

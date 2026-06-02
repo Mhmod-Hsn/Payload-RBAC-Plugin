@@ -34,4 +34,18 @@ export interface PluginOptions {
    * Inject additional custom fields into the generated Permissions collection
    */
   permissionsFields?: Field[]
+
+  /**
+   * Hide the Roles collection from the Admin panel sidebar/dashboard
+   * Can be a boolean or a function based on the logged-in user
+   * @default false
+   */
+  hideRoles?: boolean | ((args: { user: any }) => boolean)
+
+  /**
+   * Hide the Permissions collection from the Admin panel sidebar/dashboard
+   * Can be a boolean or a function based on the logged-in user
+   * @default false
+   */
+  hidePermissions?: boolean | ((args: { user: any }) => boolean)
 }

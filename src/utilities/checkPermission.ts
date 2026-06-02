@@ -1,5 +1,5 @@
-import type { Access } from 'payload'
-import { hasPermission } from './hasPermission.js'
+import type { Access } from 'payload';
+import { hasPermission } from './hasPermission';
 
 /**
  * A Higher-Order Function to drop into Payload Collection access control fields.
