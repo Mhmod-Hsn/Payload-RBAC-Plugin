@@ -1,5 +1,5 @@
 {
-  "name": "rbac-plugin",
+  "name": "payload-rbac",
   "version": "1.0.0",
   "description": "RBAC plugin for payloadcms",
   "license": "MIT",

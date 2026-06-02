@@ -1,218 +1,172 @@
-# Payload Plugin Template
+# Payload CMS Dynamic RBAC Plugin
 
-A template repo to create a [Payload CMS](https://payloadcms.com) plugin.
+A professional, database-backed Role-Based Access Control (RBAC) system for [Payload CMS](https://payloadcms.com) (v3). 
 
-Payload is built with a robust infrastructure intended to support Plugins with ease. This provides a simple, modular, and reusable way for developers to extend the core capabilities of Payload.
+This plugin emphasizes checking **permissions instead of roles** to avoid hard-coded authorization logic in your source code, making your access control highly scalable, modular, and dynamic.
 
-To build your own Payload plugin, all you need is:
+---
 
-- An understanding of the basic Payload concepts
-- And some JavaScript/Typescript experience
+## Features
 
-## Background
+- **Dynamic Collections**: Automatically injects database-backed `Roles` and `Permissions` collections.
+- **Auth Collection Extension**: Injects a `roles` relationship field into your target auth collection (e.g., `users`) with `saveToJWT: true` for zero-cost runtime checks.
+- **Bulk Permission Generator**: In the Admin UI, easily switch between creating a single permission or using the Bulk CRUD Generator to automatically generate separate permissions (e.g., `posts:create`, `posts:read`, `posts:update`, `posts:delete`) at once. 
+- **UI-Only Helpers**: Bulk generator fields (`type`, `collectionName`, CRUD checkboxes) are purely for the UI and are never saved to your database, keeping your collections clean.
+- **Customizable Schemas**: Allow developers to inject additional custom fields into both `Roles` and `Permissions` schemas.
+- **Granular Control**: Set visibility permissions (`hideRoles`, `hidePermissions`) dynamically or statically for the RBAC admin interface.
+- **Helper Utilities**: Simple and robust functions to check permissions (`hasPermission`) and access control wrappers (`checkPermission`).
+- **Fully Tested**: Powered by a robust integration and unit test suite built with Vitest.
 
-Here is a short recap on how to integrate plugins with Payload, to learn more visit the [plugin overview page](https://payloadcms.com/docs/plugins/overview).
+## Screenshots
 
-### How to install a plugin
+### 1. Permissions List View
+Shows flat generated permissions (e.g. `posts:create`, `posts:read`) and legacy system permissions.
+![Permissions List View](images/permissions_list.png)
 
-To install any plugin, simply add it to your payload.config() in the Plugin array.
+### 2. Single Permission Form
+Create individual custom permissions.
+![Single Permission Form](images/permissions_single.png)
 
-```ts
-import myPlugin from 'my-plugin'
+### 3. Bulk CRUD Generator Form
+Select a collection and check CRUD actions to instantly generate multiple permissions.
+![Bulk CRUD Generator Form](images/permissions_bulk.png)
 
-export const config = buildConfig({
+### 4. Roles List View
+Displays roles and all permissions associated with them.
+![Roles List View](images/roles_list.png)
+
+### 5. Role Configuration Form
+Assign permissions directly to roles in the admin UI.
+![Role Configuration Form](images/role_edit.png)
+
+---
+
+## Installation
+
+Add the plugin to your project:
+
+```bash
+pnpm add payload-rbac
+# or
+npm install payload-rbac
+# or
+yarn add payload-rbac
+```
+
+---
+
+## Setup & Configuration
+
+Import and configure the plugin in your `payload.config.ts`:
+
+```typescript
+import { buildConfig } from 'payload'
+import { rbac, hasPermission } from 'payload-rbac'
+
+export default buildConfig({
+  collections: [
+    {
+      slug: 'posts',
+      fields: [],
+    },
+  ],
   plugins: [
-    // You can pass options to the plugin
-    myPlugin({
+    rbac({
       enabled: true,
+      // Optional configurations:
+      authCollectionSlug: 'users',        // Default: 'users'
+      rolesCollectionSlug: 'roles',        // Default: 'roles'
+      permissionsCollectionSlug: 'permissions', // Default: 'permissions'
+      
+      // Control access/visibility of the RBAC panel:
+      hidePermissions: ({ user }) => !hasPermission(user, 'access:permissions'),
+      hideRoles: ({ user }) => !hasPermission(user, 'access:roles'),
     }),
   ],
 })
 ```
 
-### Initialization
+### Configuration Options
 
-The initialization process goes in the following order:
+| Option | Type | Default | Description |
+| :--- | :--- | :--- | :--- |
+| `enabled` | `boolean` | `true` | Enable or disable the plugin. |
+| `authCollectionSlug` | `string` | `'users'` | The collection slug representing the users collection. |
+| `rolesCollectionSlug` | `string` | `'roles'` | The slug for the automatically injected Roles collection. |
+| `permissionsCollectionSlug` | `string` | `'permissions'` | The slug for the automatically injected Permissions collection. |
+| `rolesFields` | `Field[]` | `[]` | Extra custom fields to inject into the Roles collection. |
+| `permissionsFields` | `Field[]` | `[]` | Extra custom fields to inject into the Permissions collection. |
+| `hideRoles` | `boolean \| ((args: { user: any }) => boolean)` | `false` | Hide the Roles collection from the sidebar navigation. |
+| `hidePermissions` | `boolean \| ((args: { user: any }) => boolean)` | `false` | Hide the Permissions collection from the sidebar navigation. |
 
-1. Incoming config is validated
-2. **Plugins execute**
-3. Default options are integrated
-4. Sanitization cleans and validates data
-5. Final config gets initialized
+---
 
-## Building the Plugin
+## Usage
 
-When you build a plugin, you are purely building a feature for your project and then abstracting it outside of the project.
+### 1. Protecting Collections (Access Control)
 
-### Template Files
+You can protect collections using the `checkPermission` Higher-Order Function. It returns a standard Payload `Access` control resolver.
 
-In the Payload [plugin template](https://github.com/payloadcms/payload/tree/3.x/templates/plugin), you will see a common file structure that is used across all plugins:
+```typescript
+import { checkPermission } from 'payload-rbac'
 
-1. root folder
-2. /src folder
-3. /dev folder
-
-#### Root
-
-In the root folder, you will see various files that relate to the configuration of the plugin. We set up our environment in a similar manner in Payload core and across other projects, so hopefully these will look familiar:
-
-- **README**.md\* - This contains instructions on how to use the template. When you are ready, update this to contain instructions on how to use your Plugin.
-- **package**.json\* - Contains necessary scripts and dependencies. Overwrite the metadata in this file to describe your Plugin.
-- .**eslint**.config.js - Eslint configuration for reporting on problematic patterns.
-- .**gitignore** - List specific untracked files to omit from Git.
-- .**prettierrc**.json - Configuration for Prettier code formatting.
-- **tsconfig**.json - Configures the compiler options for TypeScript
-- .**swcrc** - Configuration for SWC, a fast compiler that transpiles and bundles TypeScript.
-- **vitest**.config.js - Config file for Vitest, defining how tests are run and how modules are resolved
-
-**IMPORTANT\***: You will need to modify these files.
-
-#### Dev
-
-In the dev folder, you’ll find a basic payload project, created with `npx create-payload-app` and the blank template.
-
-**IMPORTANT**: Make a copy of the `.env.example` file and rename it to `.env`. Update the `DATABASE_URL` to match the database you are using and your plugin name. Update `PAYLOAD_SECRET` to a unique string.
-**You will not be able to run `pnpm/yarn dev` until you have created this `.env` file.**
-
-`myPlugin` has already been added to the `payload.config()` file in this project.
-
-```ts
-plugins: [
-  myPlugin({
-    collections: {
-      posts: true,
-    },
-  }),
-]
+export const PostsCollection = {
+  slug: 'posts',
+  access: {
+    create: checkPermission('posts:create'),
+    read: checkPermission('posts:read'),
+    update: checkPermission('posts:update'),
+    delete: checkPermission('posts:delete'),
+  },
+  fields: [],
+}
 ```
 
-Later when you rename the plugin or add additional options, **make sure to update it here**.
+### 2. Manual Permission Verification (`hasPermission`)
 
-You may wish to add collections or expand the test project depending on the purpose of your plugin. Just make sure to keep this dev environment as simplified as possible - users should be able to install your plugin without additional configuration required.
+For custom endpoints, hooks, or conditionally rendering logic, use the `hasPermission` utility:
 
-When you’re ready to start development, initiate the project with `pnpm/npm/yarn dev` and pull up [http://localhost:3000](http://localhost:3000) in your browser.
+```typescript
+import { hasPermission } from 'payload-rbac'
 
-#### Src
-
-Now that we have our environment setup and we have a dev project ready to - it’s time to build the plugin!
-
-**index.ts**
-
-The essence of a Payload plugin is simply to extend the payload config - and that is exactly what we are doing in this file.
-
-```ts
-export const myPlugin =
-  (pluginOptions: MyPluginConfig) =>
-  (config: Config): Config => {
-    // do cool stuff with the config here
-
-    return config
+const myCustomEndpoint = (req, res) => {
+  const user = req.user
+  
+  if (hasPermission(user, 'export:reports')) {
+    // allow operation
+  } else {
+    res.status(403).send('Forbidden')
   }
-```
-
-First, we receive the existing payload config along with any plugin options.
-
-From here, you can extend the config as you wish.
-
-Finally, you return the config and that is it!
-
-##### Spread Syntax
-
-Spread syntax (or the spread operator) is a feature in JavaScript that uses the dot notation **(...)** to spread elements from arrays, strings, or objects into various contexts.
-
-We are going to use spread syntax to allow us to add data to existing arrays without losing the existing data. It is crucial to spread the existing data correctly – else this can cause adverse behavior and conflicts with Payload config and other plugins.
-
-Let’s say you want to build a plugin that adds a new collection:
-
-```ts
-config.collections = [
-  ...(config.collections || []),
-  // Add additional collections here
-]
-```
-
-First we spread the `config.collections` to ensure that we don’t lose the existing collections, then you can add any additional collections just as you would in a regular payload config.
-
-This same logic is applied to other properties like admin, hooks, globals:
-
-```ts
-config.globals = [
-  ...(config.globals || []),
-  // Add additional globals here
-]
-
-config.hooks = {
-  ...(incomingConfig.hooks || {}),
-  // Add additional hooks here
 }
 ```
 
-Some properties will be slightly different to extend, for instance the onInit property:
+---
 
-```ts
-import { onInitExtension } from './onInitExtension' // example file
+## Bulk Permission Generator UI
 
-config.onInit = async (payload) => {
-  if (incomingConfig.onInit) await incomingConfig.onInit(payload)
-  // Add additional onInit code by defining an onInitExtension function
-  onInitExtension(pluginOptions, payload)
-}
+When navigating to the **Permissions** collection in your Payload Admin panel:
+1. Select **Bulk CRUD Generator** in the `Type` select box (visible only during document creation).
+2. Enter the target collection slug (e.g. `posts`) in the `Collection Name` field.
+3. Check the CRUD operations you wish to generate (e.g., `create`, `read`).
+4. Save the document.
+5. The plugin runs a `beforeChange` hook that creates individual flat records (`posts:create`, `posts:read`) in the database, and avoids saving any temporary helper fields to the database.
+
+---
+
+## Development & Testing
+
+If you are developing this plugin locally, you can run the test suite:
+
+```bash
+# Run unit and integration tests
+pnpm test:int
+
+# Run tests in watch mode
+pnpm test:int --watch
 ```
 
-If you wish to add to the onInit, you must include the **async/await**. We don’t use spread syntax in this case, instead you must await the existing `onInit` before running additional functionality.
+---
 
-In the template, we have stubbed out some addition `onInit` actions that seeds in a document to the `plugin-collection`, you can use this as a base point to add more actions - and if not needed, feel free to delete it.
+## License
 
-##### Types.ts
-
-If your plugin has options, you should define and provide types for these options.
-
-```ts
-export type MyPluginConfig = {
-  /**
-   * List of collections to add a custom field
-   */
-  collections?: Partial<Record<CollectionSlug, true>>
-  /**
-   * Disable the plugin
-   */
-  disabled?: boolean
-}
-```
-
-If possible, include JSDoc comments to describe the options and their types. This allows a developer to see details about the options in their editor.
-
-##### Testing
-
-Having a test suite for your plugin is essential to ensure quality and stability. **Vitest** is a fast, modern testing framework that works seamlessly with Vite and supports TypeScript out of the box.
-
-Vitest organizes tests into test suites and cases, similar to other testing frameworks. We recommend creating individual tests based on the expected behavior of your plugin from start to finish.
-
-Writing tests with Vitest is very straightforward, and you can learn more about how it works in the [Vitest documentation.](https://vitest.dev/)
-
-For this template, we stubbed out `int.spec.ts` in the `dev` folder where you can write your tests.
-
-```ts
-describe('Plugin tests', () => {
-  // Create tests to ensure expected behavior from the plugin
-  it('some condition that must be met', () => {
-   // Write your test logic here
-   expect(...)
-  })
-})
-```
-
-## Best practices
-
-With this tutorial and the plugin template, you should have everything you need to start building your own plugin.
-In addition to the setup, here are other best practices aim we follow:
-
-- **Providing an enable / disable option:** For a better user experience, provide a way to disable the plugin without uninstalling it. This is especially important if your plugin adds additional webpack aliases, this will allow you to still let the webpack run to prevent errors.
-- **Include tests in your GitHub CI workflow**: If you’ve configured tests for your package, integrate them into your workflow to run the tests each time you commit to the plugin repository. Learn more about [how to configure tests into your GitHub CI workflow.](https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs)
-- **Publish your finished plugin to NPM**: The best way to share and allow others to use your plugin once it is complete is to publish an NPM package. This process is straightforward and well documented, find out more [creating and publishing a NPM package here.](https://docs.npmjs.com/creating-and-publishing-scoped-public-packages/).
-- **Add payload-plugin topic tag**: Apply the tag **payload-plugin **to your GitHub repository. This will boost the visibility of your plugin and ensure it gets listed with [existing payload plugins](https://github.com/topics/payload-plugin).
-- **Use [Semantic Versioning](https://semver.org/) (SemVar)** - With the SemVar system you release version numbers that reflect the nature of changes (major, minor, patch). Ensure all major versions reference their Payload compatibility.
-
-# Questions
-
-Please contact [Payload](mailto:dev@payloadcms.com) with any questions about using this plugin template.
+MIT
