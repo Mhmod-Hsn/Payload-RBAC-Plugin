@@ -2,6 +2,14 @@
   "name": "payload-rbac",
   "version": "1.0.0",
   "description": "RBAC plugin for payloadcms",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Mhmod-Hsn/Payload-RBAC-Plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Mhmod-Hsn/Payload-RBAC-Plugin/issues"
+  },
+  "homepage": "https://github.com/Mhmod-Hsn/Payload-RBAC-Plugin#readme",
   "license": "MIT",
   "type": "module",
   "exports": {
