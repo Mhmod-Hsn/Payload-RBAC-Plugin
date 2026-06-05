@@ -11,6 +11,22 @@
   },
   "homepage": "https://github.com/Mhmod-Hsn/Payload-RBAC-Plugin#readme",
   "license": "MIT",
+  "author": "Mahmoud Hassan <hsn.mhmod.96@gmail.com> (https://github.com/Mhmod-Hsn)",
+  "keywords": [
+    "payload",
+    "payloadcms",
+    "payload-plugin",
+    "plugin",
+    "rbac",
+    "role-based-access-control",
+    "access-control",
+    "permissions",
+    "roles",
+    "security",
+    "authorization",
+    "auth",
+    "typescript"
+  ],
   "type": "module",
   "exports": {
     ".": {

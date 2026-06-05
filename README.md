@@ -1,5 +1,10 @@
 # Payload CMS Dynamic RBAC Plugin
 
+[![NPM Version](https://img.shields.io/npm/v/payload-rbac-plugin.svg?style=flat-square)](https://www.npmjs.com/package/payload-rbac-plugin)
+[![NPM Downloads](https://img.shields.io/npm/dm/payload-rbac-plugin.svg?style=flat-square)](https://www.npmjs.com/package/payload-rbac-plugin)
+[![License](https://img.shields.io/npm/l/payload-rbac-plugin.svg?style=flat-square)](https://github.com/Mhmod-Hsn/Payload-RBAC-Plugin/blob/main/LICENSE)
+[![CI Status](https://img.shields.io/github/actions/workflow/status/Mhmod-Hsn/Payload-RBAC-Plugin/ci.yml?branch=main&style=flat-square)](https://github.com/Mhmod-Hsn/Payload-RBAC-Plugin/actions)
+
 A professional, database-backed Role-Based Access Control (RBAC) system for [Payload CMS](https://payloadcms.com) (v3). 
 
 This plugin emphasizes checking **permissions instead of roles** to avoid hard-coded authorization logic in your source code, making your access control highly scalable, modular, and dynamic.
