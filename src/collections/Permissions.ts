@@ -54,6 +54,50 @@ export const createPermissionsCollection = (options: PluginOptions): CollectionC
         },
       },
       {
+        name: 'conditions',
+        type: 'array',
+        admin: {
+          condition: (data) => data?.type === 'single',
+          description:
+            'Add dynamic row-level security constraints to this permission. If specified, this permission will only grant access to documents matching these conditions.',
+        },
+        fields: [
+          {
+            name: 'field',
+            type: 'text',
+            required: true,
+            admin: {
+              description: 'The document field to check (e.g. "sender" or "status").',
+            },
+          },
+          {
+            name: 'operator',
+            type: 'select',
+            required: true,
+            defaultValue: 'equals',
+            options: [
+              { label: 'Equals', value: 'equals' },
+              { label: 'Not Equals', value: 'not_equals' },
+              { label: 'In', value: 'in' },
+              { label: 'Not In', value: 'not_in' },
+              { label: 'Exists', value: 'exists' },
+              { label: 'Greater Than', value: 'greater_than' },
+              { label: 'Less Than', value: 'less_than' },
+              { label: 'Like', value: 'like' },
+              { label: 'Contains', value: 'contains' },
+            ],
+          },
+          {
+            name: 'value',
+            type: 'text',
+            admin: {
+              description:
+                'Value to compare against. Supports {{user.id}}, {{user.roles}}, {{user.role}} variables.',
+            },
+          },
+        ],
+      },
+      {
         name: 'collectionName',
         type: 'text',
         admin: {

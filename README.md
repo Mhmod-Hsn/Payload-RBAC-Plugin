@@ -13,6 +13,7 @@ This plugin emphasizes checking **permissions instead of roles** to avoid hard-c
 
 ## Features
 
+- **Attribute-Based Access Control (ABAC)**: Support for dynamic, Row-Level Security conditions configured right from the Payload Admin UI. No code updates required!
 - **Dynamic Collections**: Automatically injects database-backed `Roles` and `Permissions` collections.
 - **Auth Collection Extension**: Injects a `roles` relationship field into your target auth collection (e.g., `users`) with `saveToJWT: true` for zero-cost runtime checks.
 - **Bulk Permission Generator**: In the Admin UI, easily switch between creating a single permission or using the Bulk CRUD Generator to automatically generate separate permissions (e.g., `posts:create`, `posts:read`, `posts:update`, `posts:delete`) at once. 
@@ -129,7 +130,36 @@ export const PostsCollection = {
 }
 ```
 
-### 2. Manual Permission Verification (`hasPermission`)
+### 2. Dynamic Row-Level Security (ABAC)
+
+The `checkPermission` wrapper natively supports Attribute-Based Access Control (ABAC). If an administrator assigns a permission with `conditions` in the Admin UI (e.g. `sender equals {{user.id}}`), `checkPermission` will automatically map it to a Payload `Where` object without any code changes!
+
+If you need to construct these queries manually outside of standard access control, you can use the `getPermissionQuery` utility:
+
+```typescript
+import { getPermissionQuery } from 'payload-rbac-plugin'
+
+export const CustomEndpoint = async (req) => {
+  // Returns `true`, `false`, or a Payload Where object depending on UI conditions
+  const accessQuery = getPermissionQuery(req.user, 'posts:read')
+  
+  if (!accessQuery) return Response.json({ error: 'Forbidden' }, { status: 403 })
+
+  const posts = await req.payload.find({
+    collection: 'posts',
+    where: typeof accessQuery === 'object' ? accessQuery : undefined,
+  })
+}
+```
+
+#### Supported Dynamic Variables
+When defining conditional `Value`s in the UI, you can inject variables:
+- `{{user.id}}` - Replaced with the current user's ID
+- `{{user.roles}}` - Replaced with an array of the user's role IDs (useful for the `in` operator)
+- `{{user.role}}` - Replaced with the user's role ID (if using a single custom role field)
+- `true` / `false` - Properly parsed into booleans (useful for the `exists` operator)
+
+### 3. Manual Permission Verification (`hasPermission`)
 
 For custom endpoints, hooks, or conditionally rendering logic, use the `hasPermission` utility:
 

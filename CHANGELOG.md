@@ -1,6 +1,13 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+## [1.1.0]
+
+### Added
+- **Major Update: Attribute-Based Access Control (ABAC)**. The plugin now natively supports dynamic Row-Level Security!
+- Added `conditions` array field to the `Permissions` collection to allow administrators to define dynamic row-level access queries via the UI (e.g. `sender equals {{user.id}}`).
+- Introduced the `getPermissionQuery` utility, which evaluates a user's permissions and maps UI conditions into a standard Payload `Where` object. Supports dynamic variables: `{{user.id}}`, `{{user.role}}`, and `{{user.roles}}`.
+- Updated `checkPermission` Higher-Order Function to automatically enforce these dynamic UI queries at the collection access level, requiring zero code changes for consumers.
 
 ## [1.0.4]
 
