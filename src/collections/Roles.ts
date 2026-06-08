@@ -1,5 +1,6 @@
-import type { CollectionConfig } from 'payload';
-import type { PluginOptions } from '../types';
+import type { CollectionConfig } from 'payload'
+
+import type { PluginOptions } from '../types'
 
 export const createRolesCollection = (options: PluginOptions): CollectionConfig => {
   const slug = options.rolesCollectionSlug || 'roles'
@@ -8,32 +9,35 @@ export const createRolesCollection = (options: PluginOptions): CollectionConfig 
 
   return {
     slug,
+    access: options.rolesAccess || {
+      create: () => true,
+      delete: () => true,
+      read: () => true,
+      update: () => true,
+    },
     admin: {
-      useAsTitle: 'name',
       group: 'Access Control',
       hidden: options.hideRoles ?? false,
-    },
-    access: {
-      read: () => true,
+      useAsTitle: 'name',
     },
     fields: [
       {
         name: 'name',
         type: 'text',
-        required: true,
-        unique: true,
         admin: {
           description: 'The unique name of the role (e.g., "admin", "editor").',
         },
+        required: true,
+        unique: true,
       },
       {
         name: 'permissions',
         type: 'relationship',
-        relationTo: permissionsSlug,
-        hasMany: true,
         admin: {
           description: 'The permissions assigned to this role.',
         },
+        hasMany: true,
+        relationTo: permissionsSlug,
       },
       ...customFields,
     ],

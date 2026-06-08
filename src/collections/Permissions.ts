@@ -10,8 +10,11 @@ export const createPermissionsCollection = (options: PluginOptions): CollectionC
 
   return {
     slug,
-    access: {
+    access: options.permissionsAccess || {
+      create: () => true,
+      delete: () => true,
       read: () => true,
+      update: () => true,
     },
     admin: {
       group: 'Access Control',

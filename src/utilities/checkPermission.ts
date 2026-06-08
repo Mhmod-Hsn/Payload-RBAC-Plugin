@@ -1,4 +1,4 @@
-import type { Access } from 'payload';
+
 import { hasPermission } from './hasPermission';
 
 /**
@@ -7,8 +7,8 @@ import { hasPermission } from './hasPermission';
  * @param permissionName - The required permission name
  * @returns Access function
  */
-export const checkPermission = (permissionName: string): Access => {
-  return ({ req: { user } }) => {
+export const checkPermission = (permissionName: string): any => {
+  return ({ req: { user } }: any) => {
     // We can just rely on the synchronous hasPermission check.
     // If relations are unpopulated, it will return false. Ensure your auth
     // collection is configured with adequate depth for saveToJWT or default depth.

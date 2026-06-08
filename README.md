@@ -103,6 +103,8 @@ export default buildConfig({
 | `permissionsFields` | `Field[]` | `[]` | Extra custom fields to inject into the Permissions collection. |
 | `hideRoles` | `boolean \| ((args: { user: any }) => boolean)` | `false` | Hide the Roles collection from the sidebar navigation. |
 | `hidePermissions` | `boolean \| ((args: { user: any }) => boolean)` | `false` | Hide the Permissions collection from the sidebar navigation. |
+| `permissionsAccess` | `CollectionConfig['access']` | `{ ... }` | Access control functions for the generated Permissions collection (defaults to public). |
+| `rolesAccess` | `CollectionConfig['access']` | `{ ... }` | Access control functions for the generated Roles collection (defaults to public). |
 
 ---
 
